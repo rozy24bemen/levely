@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8" />
+    <title>Levely MVP</title>
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <style>
+        body { font-family: system-ui, Arial, sans-serif; margin: 1.5rem; background:#f6f8fa; }
+        h1 { margin-top:0; }
+        section { background:#fff; padding:1rem 1.25rem; border-radius:8px; box-shadow:0 2px 4px rgba(0,0,0,.06); margin-bottom:1.25rem; }
+        form { display:flex; flex-direction:column; gap:.5rem; }
+        label { font-size:.85rem; text-transform:uppercase; letter-spacing:.5px; color:#555; }
+        input, select, textarea { padding:.55rem .7rem; border:1px solid #ccc; border-radius:6px; font-size:.9rem; }
+        button { cursor:pointer; background:#2563eb; color:#fff; border:none; padding:.6rem .9rem; border-radius:6px; font-weight:600; font-size:.85rem; }
+        button:hover { background:#1e4fb5; }
+        .posts { display:grid; gap:.75rem; }
+        .post { background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:.75rem .9rem; position:relative; }
+        .meta { font-size:.7rem; color:#555; margin-bottom:.35rem; }
+        .like-btn { background:#ea580c; margin-left:.5rem; }
+        .like-btn:hover { background:#c94a07; }
+        .flex { display:flex; align-items:center; gap:.5rem; }
+        .row { display:flex; gap:.75rem; flex-wrap:wrap; }
+        .pill { background:#eef2ff; color:#3730a3; padding:.25rem .55rem; border-radius:999px; font-size:.65rem; font-weight:600; }
+        .small { font-size:.75rem; color:#444; }
+        .error { color:#b91c1c; font-size:.8rem; }
+    </style>
+</head>
+<body>
+    <h1>Levely MVP</h1>
+    <p class="small">Perfil activo: <strong>H2</strong>. Cambia a PostgreSQL con el perfil <code>dev</code> cuando quieras persistencia real.</p>
+
+    <section id="user-section">
+        <h2>Crear Usuario</h2>
+        <form id="user-form">
+            <div class="row">
+                <div style="flex:1;min-width:180px">
+                    <label>Nombre</label>
+                    <input name="nombre" required />
+                </div>
+                <div style="flex:1;min-width:220px">
+                    <label>Email</label>
+                    <input name="email" required type="email" />
+                </div>
+            </div>
+            <label>Biografía</label>
+            <textarea name="biografia" rows="2" placeholder="Cuéntanos algo..."></textarea>
+            <button type="submit">Crear Usuario</button>
+            <div id="user-error" class="error"></div>
+        </form>
+        <h3 style="margin-top:1rem">Usuarios</h3>
+        <select id="active-user"></select>
+        <div id="active-user-info" class="small" style="margin-top:.5rem"></div>
+    </section>
+
+    <section id="post-section">
+        <h2>Crear Post</h2>
+        <form id="post-form">
+            <label>Autor</label>
+            <select name="authorId" id="post-author" required></select>
+            <label>Contenido</label>
+            <textarea name="content" rows="2" required placeholder="Escribe algo épico..."></textarea>
+            <button type="submit">Publicar</button>
+            <div id="post-error" class="error"></div>
+        </form>
+    </section>
+
+    <section id="feed-section">
+        <h2>Feed</h2>
+        <div class="posts" id="posts"></div>
+    </section>
+
+    <script src="index.js" defer></script>
+</body>
+</html>
