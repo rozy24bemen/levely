@@ -13,18 +13,8 @@ async function fetchJSON(url, opts = {}) {
 let users = [];
 
 async function loadUsers() {
-  // No endpoint de listado aún, así que inferimos desde IDs conocidos + semillas (1..10) comprobando existencia.
-  // Para MVP: intentar leer usuarios 1..10 y agregarlos si existen.
-  const found = [];
-  for (let id = 1; id <= 10; id++) {
-    try {
-      const u = await fetchJSON(`${api.users}/${id}`);
-      found.push(u);
-    } catch (e) {
-      // ignorar 404
-    }
-  }
-  users = found;
+  const data = await fetchJSON(api.users);
+  users = data;
   renderUsers();
   renderUserSelects();
 }

@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.Instant;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -52,5 +53,17 @@ public class UserController {
                         "level", xpService.getLevel(u)
                 )))
                 .orElse(ResponseEntity.notFound().build());
+    }
+
+    @GetMapping
+    public ResponseEntity<?> listUsers() {
+        List<Usuario> all = usuarioRepository.findAll();
+        return ResponseEntity.ok(all.stream().map(u -> Map.of(
+                "id", u.getId(),
+                "nombre", u.getNombre(),
+                "email", u.getEmail(),
+                "xp", u.getXpTotal(),
+                "level", xpService.getLevel(u)
+        )).toList());
     }
 }
