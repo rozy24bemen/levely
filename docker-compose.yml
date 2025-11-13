@@ -1,0 +1,15 @@
+version: "3.9"
+services:
+  postgres:
+    image: postgres:16
+    container_name: levely-postgres
+    environment:
+      POSTGRES_DB: levely
+      POSTGRES_USER: levely
+      POSTGRES_PASSWORD: levely
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+volumes:
+  pgdata:
