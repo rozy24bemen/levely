@@ -1,0 +1,174 @@
+-- 1. TABLA CATEGORIAS (Maestra)
+CREATE TABLE Categorias (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion TEXT
+);
+
+-- 2. TABLA NIVELES (Lógica de Gamificación)
+CREATE TABLE Niveles (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE,
+    xp_minima INT NOT NULL CHECK (xp_minima >= 0)
+);
+
+-- 3. TABLA USUARIOS (Core de la Red Social)
+CREATE TABLE Usuarios (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(50) NOT NULL UNIQUE,
+    email VARCHAR(100) NOT NULL UNIQUE,
+    password VARCHAR(255) NOT NULL, -- Se recomienda usar un buen hash
+    biografia TEXT,
+    foto_perfil VARCHAR(255),
+    fecha_registro TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    xp_total INT DEFAULT 0 CHECK (xp_total >= 0),
+    nivel_id INT NOT NULL,
+    
+    -- Restricción de Clave Foránea
+    CONSTRAINT fk_nivel
+        FOREIGN KEY (nivel_id)
+        REFERENCES Niveles(id)
+);
+
+-- 4. TABLA PUBLICACIONES (Contenido)
+CREATE TABLE Publicaciones (
+    post_id SERIAL PRIMARY KEY,
+    autor_id INT NOT NULL,
+    contenido TEXT NOT NULL,
+    imagen_url VARCHAR(255),
+    categoria_id INT,
+    fecha_creacion TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Restricciones de Clave Foránea
+    CONSTRAINT fk_autor
+        FOREIGN KEY (autor_id)
+        REFERENCES Usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_categoria
+        FOREIGN KEY (categoria_id)
+        REFERENCES Categorias(id) ON DELETE SET NULL
+);
+
+-- 5. TABLA COMENTARIOS
+CREATE TABLE Comentarios (
+    id SERIAL PRIMARY KEY,
+    post_id INT NOT NULL,
+    autor_id INT NOT NULL,
+    contenido TEXT NOT NULL,
+    fecha_creacion TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Restricciones de Clave Foránea
+    CONSTRAINT fk_post
+        FOREIGN KEY (post_id)
+        REFERENCES Publicaciones(post_id) ON DELETE CASCADE,
+    CONSTRAINT fk_autor
+        FOREIGN KEY (autor_id)
+        REFERENCES Usuarios(id) ON DELETE CASCADE
+);
+
+-- 6. TABLA LIKES (PK Compuesta)
+CREATE TABLE Likes (
+    usuario_id INT NOT NULL,
+    post_id INT NOT NULL,
+    fecha_like TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Clave Primaria Compuesta: Un usuario solo puede dar un like por post
+    PRIMARY KEY (usuario_id, post_id),
+    
+    -- Restricciones de Clave Foránea
+    CONSTRAINT fk_usuario
+        FOREIGN KEY (usuario_id)
+        REFERENCES Usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_post
+        FOREIGN KEY (post_id)
+        REFERENCES Publicaciones(post_id) ON DELETE CASCADE
+);
+
+-- 7. TABLA SEGUIMIENTOS (PK Compuesta)
+CREATE TABLE Seguimientos (
+    seguidor_id INT NOT NULL,
+    seguido_id INT NOT NULL,
+    fecha_seguimiento TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Clave Primaria Compuesta: Un usuario solo puede seguir a otro una vez
+    PRIMARY KEY (seguidor_id, seguido_id),
+    
+    -- Restricción para evitar que un usuario se siga a sí mismo
+    CONSTRAINT check_self_follow CHECK (seguidor_id <> seguido_id),
+    
+    -- Restricciones de Clave Foránea
+    CONSTRAINT fk_seguidor
+        FOREIGN KEY (seguidor_id)
+        REFERENCES Usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_seguido
+        FOREIGN KEY (seguido_id)
+        REFERENCES Usuarios(id) ON DELETE CASCADE
+);
+
+-- 8. TABLA LOGROS
+CREATE TABLE Logros (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion TEXT,
+    xp_recompensa INT NOT NULL CHECK (xp_recompensa > 0),
+    condicion TEXT -- Regla para el backend (ej: 'POST_COUNT >= 10')
+);
+
+-- 9. TABLA USUARIOS_LOGROS (PK Compuesta)
+CREATE TABLE Usuarios_Logros (
+    usuario_id INT NOT NULL,
+    logro_id INT NOT NULL,
+    fecha_desbloqueo TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Clave Primaria Compuesta: Un usuario solo desbloquea un logro una vez
+    PRIMARY KEY (usuario_id, logro_id),
+    
+    -- Restricciones de Clave Foránea
+    CONSTRAINT fk_usuario
+        FOREIGN KEY (usuario_id)
+        REFERENCES Usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_logro
+        FOREIGN KEY (logro_id)
+        REFERENCES Logros(id) ON DELETE CASCADE
+);
+
+-- 10. TABLA MISIONES
+CREATE TABLE Misiones (
+    id SERIAL PRIMARY KEY,
+    nombre VARCHAR(100) NOT NULL UNIQUE,
+    descripcion TEXT,
+    xp_recompensa INT NOT NULL CHECK (xp_recompensa > 0),
+    condicion TEXT -- Regla para el backend (ej: 'LIKE_GIVEN_DAILY >= 5')
+);
+
+-- 11. TABLA USUARIOS_MISIONES (PK Compuesta)
+CREATE TABLE Usuarios_Misiones (
+    usuario_id INT NOT NULL,
+    mision_id INT NOT NULL,
+    fecha_completado TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Clave Primaria Compuesta: Un usuario solo completa una misión (definida) una vez
+    PRIMARY KEY (usuario_id, mision_id),
+    
+    -- Restricciones de Clave Foránea
+    CONSTRAINT fk_usuario
+        FOREIGN KEY (usuario_id)
+        REFERENCES Usuarios(id) ON DELETE CASCADE,
+    CONSTRAINT fk_mision
+        FOREIGN KEY (mision_id)
+        REFERENCES Misiones(id) ON DELETE CASCADE
+);
+
+-- 12. TABLA NOTIFICACIONES
+CREATE TABLE Notificaciones (
+    id BIGSERIAL PRIMARY KEY,
+    usuario_id INT NOT NULL,
+    tipo VARCHAR(50) NOT NULL, -- ej: 'LIKE', 'COMMENT', 'LEVEL_UP'
+    mensaje TEXT NOT NULL,
+    leido BOOLEAN DEFAULT FALSE,
+    fecha TIMESTAMP WITH TIME ZONE DEFAULT CURRENT_TIMESTAMP,
+    
+    -- Restricción de Clave Foránea
+    CONSTRAINT fk_usuario
+        FOREIGN KEY (usuario_id)
+        REFERENCES Usuarios(id) ON DELETE CASCADE
+);
