@@ -1,0 +1,33 @@
+Frontend + Backend
+- Next.js 15 (App Router)
+- Un solo proyecto, cero CORS, API routes y Server Actions
+
+Base de datos
+- Supabase (Postgres + Auth + Storage + Realtime)
+- Todo gratis, dashboard brutal, auth con Google/GitHub en 1 clic
+
+ORM
+- Prisma 5.20+
+- Type-safety total, migraciones fáciles, autocomplete perfecto
+
+Subida de fotos
+- Supabase Storage o Vercel Blob
+- Subes fotos en 3 líneas, URLs automáticas
+
+Real-time (likes, follows, notificaciones)
+- Supabase Realtime o Prisma Pulse
+- Notificaciones en vivo sin WebSockets manuales
+
+Autenticación
+- Supabase Auth o Clerk
+- Login con Google/GitHub en 5 minutos
+
+UI
+- Tailwind + shadcn/ui + Radix
+- Componentes bonitos en 0 tiempo
+
+Deploy
+- Vercel (gratis hasta el infinito para estudiantes)
+- Un git push y ya está en producción
+
+
